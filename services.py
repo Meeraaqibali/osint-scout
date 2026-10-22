@@ -3,6 +3,7 @@ import httpx
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
 
 load_dotenv()
 
@@ -59,11 +60,13 @@ def _call_gemini(prompt: str) -> dict:
 
 def analyze_image_search(image_bytes: bytes, mime_type: str) -> str:
     client = _get_client()
-    # Use standard Gemini Vision
+    # Use the official google-genai Part object for images
+    image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
+    
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=[
-            {"mime_type": mime_type, "data": image_bytes},
+            image_part,
             "Describe this image in detail for an OSINT web search. Extract any text, names, locations, or unique identifying features. Keep it under 20 words."
         ]
     )
