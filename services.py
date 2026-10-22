@@ -1,6 +1,6 @@
 import os, json
 import httpx
-from lxml import html as lxml_html
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from google import genai
 
@@ -29,19 +29,19 @@ def ddg_search(query: str, max_results: int = 10) -> list[dict]:
         resp = client.post(url, data={"q": query})
         resp.raise_for_status()
 
-    tree = lxml_html.fromstring(resp.text)
+    soup = BeautifulSoup(resp.text, "html.parser")
     results = []
-    for node in tree.cssselect(".result"):
+    for node in soup.select(".result"):
         if len(results) >= max_results:
             break
-        a = node.cssselect("a.result__a")
-        snippet = node.cssselect(".result__snippet")
+        a = node.select_one("a.result__a")
+        snippet = node.select_one(".result__snippet")
         if not a:
             continue
         results.append({
-            "title": a[0].text_content().strip(),
-            "url": a[0].get("href", ""),
-            "snippet": snippet[0].text_content().strip() if snippet else "",
+            "title": a.get_text(strip=True),
+            "url": a.get("href", ""),
+            "snippet": snippet.get_text(strip=True) if snippet else "",
         })
     return results
 
