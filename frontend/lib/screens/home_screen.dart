@@ -9,7 +9,11 @@ import 'results_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool isDark;
+  final Function(bool) onThemeChanged;
+
+  const HomeScreen({super.key, required this.isDark, required this.onThemeChanged});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -84,28 +88,20 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showImageSourceActionSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => SafeArea(
         child: Wrap(
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt, color: AppColors.accent),
               title: const Text('Take a Photo'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
+              onTap: () { Navigator.pop(context); _pickImage(ImageSource.camera); },
             ),
             ListTile(
               leading: const Icon(Icons.photo_library, color: AppColors.accent),
               title: const Text('Choose from Gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
+              onTap: () { Navigator.pop(context); _pickImage(ImageSource.gallery); },
             ),
           ],
         ),
@@ -117,10 +113,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
-        if (didPop) return;
-        SystemNavigator.pop();
-      },
+      onPopInvoked: (didPop) { if (didPop) return; SystemNavigator.pop(); },
       child: Scaffold(
         body: SafeArea(
           child: Padding(
@@ -140,27 +133,34 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: const Icon(Icons.radar, color: AppColors.accent),
                     ),
                     const SizedBox(width: 12),
-                    const Text('OSINT Scout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text('OSINT Scout', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Theme.of(context).colorScheme.onSurface)),
                     const Spacer(),
                     IconButton(
-                      icon: const Icon(Icons.settings_outlined),
+                      icon: Icon(Icons.settings_outlined, color: Theme.of(context).colorScheme.onSurface),
                       onPressed: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => SettingsScreen(baseUrl: _baseUrl)));
+                        await Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => SettingsScreen(
+                            baseUrl: _baseUrl, 
+                            isDark: widget.isDark, 
+                            onThemeChanged: widget.onThemeChanged
+                          )
+                        ));
                         _load();
                       },
                     ),
                   ],
                 ),
                 const Spacer(),
-                const Text('Reconnaissance,\nreimagined.', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.1)),
+                Text('Reconnaissance,\nreimagined.', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1.1, color: Theme.of(context).colorScheme.onSurface)),
                 const SizedBox(height: 8),
-                const Text('Search the open web and let AI surface the signal.', style: TextStyle(color: AppColors.textDim, fontSize: 14)),
+                Text('Search the open web and let AI surface the signal.', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textDim, fontSize: 14)),
                 const SizedBox(height: 24),
                 
                 TextField(
                   controller: _controller,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => _search(),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: 'Enter a name, domain, or topic…',
                     prefixIcon: Row(
@@ -170,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: const Icon(Icons.camera_alt_outlined, color: AppColors.accent),
                           onPressed: () => _showImageSourceActionSheet(context),
                         ),
-                        const Icon(Icons.search, color: AppColors.textDim),
+                        Icon(Icons.search, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textDim),
                       ],
                     ),
                     suffixIcon: _loading
@@ -182,21 +182,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 SwitchListTile.adaptive(
                   value: _analyze,
                   onChanged: (v) => setState(() => _analyze = v),
-                  title: const Text('AI analysis', style: TextStyle(fontSize: 14)),
-                  subtitle: const Text('Summarize results and extract entities', style: TextStyle(color: AppColors.textDim, fontSize: 12)),
+                  title: Text('AI analysis', style: TextStyle(fontSize: 14, color: Theme.of(context).colorScheme.onSurface)),
+                  subtitle: Text('Summarize results and extract entities', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textDim, fontSize: 12)),
                   contentPadding: EdgeInsets.zero,
                   dense: true,
                 ),
                 if (_recents.isNotEmpty) ...[
                   const SizedBox(height: 12),
-                  const Text('RECENT', style: TextStyle(fontSize: 11, letterSpacing: 1.5, color: AppColors.textDim, fontWeight: FontWeight.w600)),
+                  Text('RECENT', style: TextStyle(fontSize: 11, letterSpacing: 1.5, color: Theme.of(context).textTheme.bodySmall?.color ?? AppColors.textDim, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
                     children: _recents.map((q) => ActionChip(
                       label: Text(q, style: const TextStyle(fontSize: 12)),
-                      backgroundColor: AppColors.surface,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
                       side: BorderSide(color: AppColors.accent.withOpacity(0.2)),
                       onPressed: () => _search(q),
                     )).toList(),

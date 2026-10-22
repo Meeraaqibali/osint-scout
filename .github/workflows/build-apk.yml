@@ -31,17 +31,17 @@ jobs:
           sed -i 's#<application #<application android:usesCleartextTraffic="true" #' \
             android/app/src/main/AndroidManifest.xml
             
-          # Force ALL necessary permissions (Internet, Camera, Gallery)
+          # Force ALL necessary permissions
           sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android">#<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.CAMERA"/>\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>\n    <uses-feature android:name="android.hardware.camera" android:required="false" />#' \
+            android/app/src/main/AndroidManifest.xml
+            
+          # RENAME THE APP TO "OSINT Scout"
+          sed -i 's#android:label="osint_scout"#android:label="OSINT Scout"#' \
             android/app/src/main/AndroidManifest.xml
 
       - name: Pub get
         working-directory: frontend
         run: flutter pub get
-
-      - name: Generate App Icons
-        working-directory: frontend
-        run: dart run flutter_launcher_icons
 
       - name: Build release APK
         working-directory: frontend
