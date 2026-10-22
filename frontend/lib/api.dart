@@ -34,7 +34,15 @@ class ApiClient {
     final streamedResponse = await request.send().timeout(const Duration(seconds: 60));
     final response = await http.Response.fromStream(streamedResponse);
 
-    if (response.statusCode != 200) throw Exception('Image search failed (${response.statusCode})');
+    if (response.statusCode != 200) {
+      try {
+        final errorJson = jsonDecode(response.body);
+        if (errorJson.containsKey('detail')) {
+          throw Exception(errorJson['detail']);
+        }
+      } catch (_) {}
+      throw Exception('Image search failed (${response.statusCode})');
+    }
     return SearchResponse.fromJson(jsonDecode(response.body));
   }
 }

@@ -57,12 +57,13 @@ def _call_gemini(prompt: str) -> dict:
     except json.JSONDecodeError:
         return {"summary": resp.text, "key_points": [], "entities": [], "risk_notes": None}
 
-def analyze_image_search(image_bytes: bytes) -> str:
+def analyze_image_search(image_bytes: bytes, mime_type: str) -> str:
     client = _get_client()
+    # Use standard Gemini Vision
     response = client.models.generate_content(
         model=GEMINI_MODEL,
         contents=[
-            {"mime_type": "image/jpeg", "data": image_bytes},
+            {"mime_type": mime_type, "data": image_bytes},
             "Describe this image in detail for an OSINT web search. Extract any text, names, locations, or unique identifying features. Keep it under 20 words."
         ]
     )
@@ -83,12 +84,9 @@ Return ONLY valid JSON with this exact shape:
 }}"""
     return _call_gemini(prompt)
 
-# THIS WAS MISSING:
 def analyze_text(text: str) -> dict:
     prompt = f"""You are an OSINT analyst. Analyze this text:
-
 \"\"\"{text}\"\"\"
-
 Return ONLY valid JSON:
 {{
   "summary": "concise summary",

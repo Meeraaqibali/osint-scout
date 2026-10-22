@@ -39,27 +39,34 @@ def search(req: SearchRequest):
 async def search_image(file: UploadFile = File(...)):
     try:
         image_bytes = await file.read()
-        query = analyze_image_search(image_bytes)
+        mime_type = file.content_type or "image/jpeg"
+        
+        # 1. Get description from Gemini Vision
+        query = analyze_image_search(image_bytes, mime_type)
         print(f"Vision extracted query: {query}")
         
+        # 2. Search web
         raw = ddg_search(query, 10)
         results = [SearchResult(**r) for r in raw]
+        
+        # 3. Analyze results
         analysis_data = analyze_results(query, raw)
         
         return SearchResponse(
-            query=f"Image: {query}", 
+            query=f"Image Search: {query}", 
             results=results, 
             analysis=Analysis(**analysis_data)
         )
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Image processing failed: {e}")
+        # This sends the exact error to the Flutter app
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/analyze", response_model=AnalyzeResponse)
 def analyze(req: AnalyzeRequest):
     try:
         return AnalyzeResponse(**analyze_text(req.text))
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

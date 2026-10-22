@@ -27,12 +27,12 @@ jobs:
         run: |
           flutter create . --project-name osint_scout --org com.osintscout --platforms=android
           
-          # Allow cleartext traffic
+          # Force cleartext traffic
           sed -i 's#<application #<application android:usesCleartextTraffic="true" #' \
             android/app/src/main/AndroidManifest.xml
             
-          # FORCE INTERNET PERMISSION
-          sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android">#<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>#' \
+          # Force ALL necessary permissions (Internet, Camera, Gallery)
+          sed -i 's#<manifest xmlns:android="http://schemas.android.com/apk/res/android">#<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <uses-permission android:name="android.permission.INTERNET"/>\n    <uses-permission android:name="android.permission.CAMERA"/>\n    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>\n    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>\n    <uses-feature android:name="android.hardware.camera" android:required="false" />#' \
             android/app/src/main/AndroidManifest.xml
 
       - name: Pub get

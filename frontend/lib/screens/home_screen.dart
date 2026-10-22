@@ -19,8 +19,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _analyze = true;
   bool _loading = false;
   List<String> _recents = [];
-  
-  // Make sure this matches your live FastAPI Cloud URL exactly!
   String _baseUrl = 'https://osint-scout-00ac27c2.fastapicloud.dev';
 
   @override
@@ -67,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: source);
+    final pickedFile = await picker.pickImage(source: source, maxWidth: 1024, maxHeight: 1024);
     if (pickedFile != null) {
       setState(() => _loading = true);
       try {
@@ -83,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // This shows the Camera/Gallery menu
   void _showImageSourceActionSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -171,7 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.camera_alt_outlined, color: AppColors.accent),
-                          // This calls the new menu instead of going straight to camera
                           onPressed: () => _showImageSourceActionSheet(context),
                         ),
                         const Icon(Icons.search, color: AppColors.textDim),
