@@ -33,6 +33,10 @@ jobs:
         working-directory: frontend
         run: flutter pub get
 
+      - name: Generate App Icons
+        working-directory: frontend
+        run: dart run flutter_launcher_icons
+
       - name: Build release APK
         working-directory: frontend
         run: flutter build apk --release

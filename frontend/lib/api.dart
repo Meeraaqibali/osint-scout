@@ -5,7 +5,7 @@ import 'models.dart';
 
 class ApiClient {
   final String baseUrl;
-  ApiClient({this.baseUrl = 'YOUR_CLOUD_URL'});
+  ApiClient({this.baseUrl = 'https://osint-scout-00ac27c2.fastapicloud.dev'});
 
   Future<bool> health() async {
     try {

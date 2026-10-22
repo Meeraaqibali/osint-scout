@@ -44,12 +44,12 @@ class _AnalysisCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.accent.withOpacity(0.12), AppColors.surface],
+          colors: [AppColors.accent.withOpacity(0.15), AppColors.surface],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.accent.withOpacity(0.3)),
+        border: Border.all(color: AppColors.accent.withOpacity(0.4)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
