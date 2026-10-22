@@ -4,3 +4,6 @@ pydantic
 python-dotenv
 google-genai
 httpx
+lxml
+cssselect
+python-multipart
