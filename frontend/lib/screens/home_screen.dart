@@ -19,6 +19,8 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _analyze = true;
   bool _loading = false;
   List<String> _recents = [];
+  
+  // Make sure this matches your live FastAPI Cloud URL exactly!
   String _baseUrl = 'https://osint-scout-00ac27c2.fastapicloud.dev';
 
   @override
@@ -81,14 +83,46 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // This shows the Camera/Gallery menu
+  void _showImageSourceActionSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: AppColors.accent),
+              title: const Text('Take a Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: AppColors.accent),
+              title: const Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // PopScope fixes the double-back-button issue
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
         if (didPop) return;
-        SystemNavigator.pop(); // Closes the app instantly
+        SystemNavigator.pop();
       },
       child: Scaffold(
         body: SafeArea(
@@ -137,7 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.camera_alt_outlined, color: AppColors.accent),
-                          onPressed: () => _pickImage(ImageSource.camera),
+                          // This calls the new menu instead of going straight to camera
+                          onPressed: () => _showImageSourceActionSheet(context),
                         ),
                         const Icon(Icons.search, color: AppColors.textDim),
                       ],
