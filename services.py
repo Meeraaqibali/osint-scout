@@ -82,3 +82,18 @@ Return ONLY valid JSON with this exact shape:
   "risk_notes": "brief note on reliability/source trust, or null"
 }}"""
     return _call_gemini(prompt)
+
+# THIS WAS MISSING:
+def analyze_text(text: str) -> dict:
+    prompt = f"""You are an OSINT analyst. Analyze this text:
+
+\"\"\"{text}\"\"\"
+
+Return ONLY valid JSON:
+{{
+  "summary": "concise summary",
+  "key_points": ["key findings"],
+  "entities": ["entities mentioned"],
+  "risk_notes": "any reliability signals, or null"
+}}"""
+    return _call_gemini(prompt)
